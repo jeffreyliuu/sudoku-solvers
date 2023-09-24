@@ -44,3 +44,33 @@ def is_consistent(assignment, row, col, value):
 # select a random variable from possible variables left
 def select_unassigned_variable(variables):
     return random.choice(variables)
+
+def order_domain_values(assignment, row, col):
+    """Part of the forward checking aspect of the algorithm where we determine in advance the 
+        possible values that a cell can take to decrease the amount of lookups.
+
+    Args:
+        assignment (int[][]): instance of the sudoku puzzle
+        row (int): row of the cell we are obtaining domain values for
+        col (int): column of the cell we are obtaining domain values for
+
+    Returns:
+        int[]: array that contains the possible values that the cell (row, col) can take
+    """
+    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if assignment[row][i] in values:
+            values.remove(assignment[row][i])  # Remove values from the same row
+        if assignment[i][col] in values:
+            values.remove(assignment[i][col])  # Remove values from the same column
+
+    box_row = 3 * (row // 3)
+    box_col = 3 * (col // 3)
+    for i in range(3):
+        for j in range(3):
+            if assignment[box_row + i][box_col + j] in values:
+                values.remove(
+                    assignment[box_row + i][box_col + j]
+                )  # Remove values from the same box
+
+    return values

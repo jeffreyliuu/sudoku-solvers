@@ -19,14 +19,14 @@ def recursive_backtracking_fc(assignment, variables):
         variables ([int,int][]): coordinates that still need a number
 
     Returns:
-        _type_: _description_
+        int[][]: Solution to the sudoku puzzle
     """
     global NODES_EXPANDED
     if len(variables) == 0:
         return assignment
 
     row, col = util.select_unassigned_variable(variables)
-    values = order_domain_values(assignment, row, col)
+    values = util.order_domain_values(assignment, row, col)
 
     for value in values:
         if util.is_consistent(assignment, row, col, value):
@@ -40,36 +40,6 @@ def recursive_backtracking_fc(assignment, variables):
             assignment[row][col] = 0
     return None
 
-
-def order_domain_values(assignment, row, col):
-    """Part of the forward checking aspect of the algorithm where we determine in advance the 
-        possible values that a cell can take to decrease the amount of lookups.
-
-    Args:
-        assignment (int[][]): instance of the sudoku puzzle
-        row (int): row of the cell we are obtaining domain values for
-        col (int): column of the cell we are obtaining domain values for
-
-    Returns:
-        int[]: array that contains the possible values that the cell (row, col) can take
-    """
-    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    for i in range(9):
-        if assignment[row][i] in values:
-            values.remove(assignment[row][i])  # Remove values from the same row
-        if assignment[i][col] in values:
-            values.remove(assignment[i][col])  # Remove values from the same column
-
-    box_row = 3 * (row // 3)
-    box_col = 3 * (col // 3)
-    for i in range(3):
-        for j in range(3):
-            if assignment[box_row + i][box_col + j] in values:
-                values.remove(
-                    assignment[box_row + i][box_col + j]
-                )  # Remove values from the same box
-
-    return values
 
 
 def forward_check(assignment, row, col):
@@ -89,13 +59,13 @@ def forward_check(assignment, row, col):
         if (
             i != col
             and assignment[row][i] == 0
-            and not order_domain_values(assignment, row, i)
+            and not util.order_domain_values(assignment, row, i)
         ):
             return False
         if (
             i != row
             and assignment[i][col] == 0
-            and not order_domain_values(assignment, i, col)
+            and not util.order_domain_values(assignment, i, col)
         ):
             return False
 
@@ -106,7 +76,7 @@ def forward_check(assignment, row, col):
                 if (
                     (box_row + i != row or box_col + j != col)
                     and assignment[box_row + i][box_col + j] == 0
-                    and not order_domain_values(assignment, box_row + i, box_col + j)
+                    and not util.order_domain_values(assignment, box_row + i, box_col + j)
                 ):
                     return False  # Empty cell in the same box has no valid values
 

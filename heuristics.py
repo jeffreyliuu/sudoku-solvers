@@ -1,22 +1,32 @@
-"""This module contains the sudoku solver algorithm with 
+"""This module contains the sudoku solver algorithm with recursive backtracking, forward checking,
+    and heuristics
 
 Returns:
-    _type_: _description_
+    _type_: the solved sudoku puzzle
 """
+
 import time
 import test_puzzles
 import util
 
 NODES_EXPANDED = 0
 
-
 def recursive_backtracking_fc_h(assignment, variables):
+    """Recursive backtracking algorithm with forward checking and heuristics.
+
+    Args:
+        assignment (int[][]): instance of the sudoku problem
+        variables ([int,int][]): array of coordinates that still need a value placed
+
+    Returns:
+        int[][]: Solution to the sudoku puzzle
+    """
     global NODES_EXPANDED
     if len(variables) == 0:
         return assignment
 
     row, col = select_unassigned_variable(assignment, variables)
-    domain = get_domain(assignment, row, col)
+    domain = util.order_domain_values(assignment, row, col)
 
     values = order_domain_values(assignment, row, col, domain)
 
@@ -34,30 +44,22 @@ def recursive_backtracking_fc_h(assignment, variables):
     return None
 
 
-# select a random variable from possible variables left
 def select_unassigned_variable(assignment, variables):
+    """To determine which variable we should assign, we use the Least Constrained 
+    Value heuristic. That is, which coordinates have the least number of possible assigned
+    values.
+
+    Args:
+        assignment (int[][]): instance of the sudoku problem
+        variables ([int,int][]): array of coordinates that still need a value placed
+
+    Returns:
+        _type_: _description_
+    """
     return min(
         variables,
-        key=lambda variable: len(get_domain(assignment, variable[0], variable[1])),
+        key=lambda variable: len(util.order_domain_values(assignment, variable[0], variable[1])),
     )
-
-
-# get domain
-def get_domain(assignment, row, col):
-    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    for i in range(9):
-        if assignment[row][i] in values:
-            values.remove(assignment[row][i])
-        if assignment[i][col] in values:
-            values.remove(assignment[i][col])
-
-    box_row = 3 * (row // 3)
-    box_col = 3 * (col // 3)
-    for x in range(3):
-        for y in range(3):
-            if assignment[box_row + x][box_col + y] in values:
-                values.remove(assignment[box_row + x][box_col + y])
-    return values
 
 
 # obtain lcv domain values
@@ -70,13 +72,13 @@ def order_domain_values(assignment, row, col, domain):
             if (
                 i != col
                 and assignment[row][i] == 0
-                and value in get_domain(assignment, row, i)
+                and value in util.order_domain_values(assignment, row, i)
             ):
                 count += 1
             if (
                 i != row
                 and assignment[i][col] == 0
-                and value in get_domain(assignment, i, col)
+                and value in util.order_domain_values(assignment, i, col)
             ):
                 count += 1
 
@@ -124,5 +126,5 @@ puzzle = test_puzzles.easy_puzzle
 possible_variables = util.obtain_variables(puzzle)
 start_time = time.time()
 util.print_sudoku(recursive_backtracking_fc_h(puzzle, possible_variables))
-print("--- %s seconds ---" % (time.time() - start_time))
+print(f"--- {time.time() - start_time} seconds ---")
 print("Nodes expanded: " + str(NODES_EXPANDED))
