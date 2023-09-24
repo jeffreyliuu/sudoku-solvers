@@ -64,7 +64,18 @@ def select_unassigned_variable(assignment, variables):
 
 # obtain lcv domain values
 def order_domain_values(assignment, row, col, domain):
-    # helper to help sort values by least constraining value
+    """This function orders the domain values so they are ordered by the Least Constraining
+    Value heuristic. That is, which domain values constrain the least cells
+
+    Args:
+        assignment (int[][]): instance of the sudoku puzzle
+        row (int): row of the cell we are obtaining domain values for
+        col (int): column of the cell we are obtaining domain values for
+        domain (int[]): possible values that the cell can hold
+
+    Returns:
+        _type_: _description_
+    """
     def least_constrained_value(value):
         count = 0
 
@@ -99,6 +110,16 @@ def order_domain_values(assignment, row, col, domain):
 
 
 def forward_check(assignment, row, col):
+    """Forward checking aspect of the algorithm where we stop recursing if we have no more
+        values that a cell can take and the assignment is still not complete.
+
+    Args:
+        assignment (int[][]): instance of the sudoku puzzle
+        row (int): row of the cell we are obtaining domain values for
+        col (int): column of the cell we are obtaining domain values for
+    Returns:
+        boolean: returns True if there are no empty variable domains, and false otherwise.
+    """
     # check same col/row if any empty values
     for i in range(9):
         if i != col and assignment[row][i] == 0 and not util.get_domain(assignment, row, i):

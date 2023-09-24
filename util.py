@@ -1,7 +1,15 @@
+"""Util folder responsible of holding valuable utility functions to help the sudoku solver 
+    algorithms.
+"""
 import random
 
 
 def print_sudoku(puzzle):
+    """Helper method to print the sudoku puzzle neatly in the console.
+
+    Args:
+        puzzle (int[][]): An instance of the sudoku puzzle
+    """
     for i, row in enumerate(puzzle):
         for j, num in enumerate(row):
             print(num, end=" ")
@@ -13,6 +21,14 @@ def print_sudoku(puzzle):
 
 
 def obtain_variables(assignment):
+    """Method that goes through a sudoku puzzle and figures which cells still need to be filled
+
+    Args:
+        assignment (int[][]): Instance of a sudoku puzzle that isn't solved yet
+
+    Returns:
+        ((int,int)[]): Array of cell coordinates that still need to be filled
+    """
     empty_cells = []
     for i in range(9):
         for j in range(9):
@@ -22,6 +38,19 @@ def obtain_variables(assignment):
 
 
 def is_consistent(assignment, row, col, value):
+    """Method that analyzes a sudoku puzzle and determines if it is still valid after placing
+    value in (row, col)
+
+    Args:
+        assignment (int[][]): instance of the sudoku puzzle
+        row (int): row of the cell we are obtaining domain values for
+        col (int): column of the cell we are obtaining domain values for
+        value (int): value is to be placed.
+
+    Returns:
+        boolean: Returns true if the sudoku puzzle is still valid after value is placed,
+            and false otherwise.
+    """
     # row check
     if value in assignment[row]:
         return False
@@ -43,6 +72,15 @@ def is_consistent(assignment, row, col, value):
 
 # select a random variable from possible variables left
 def select_unassigned_variable(variables):
+    """Method that randomly chooses a cell to be filled in. Only used in solo recursive
+    backtracking and forward checking algorithms.
+
+    Args:
+        variables ((int,int)[]): Array of cell coordinates that still need to be filled
+
+    Returns:
+        (int,int): A cell coordinate that will be filled in next.
+    """
     return random.choice(variables)
 
 def get_domain(assignment, row, col):
