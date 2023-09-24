@@ -26,7 +26,7 @@ def recursive_backtracking_fc(assignment, variables):
         return assignment
 
     row, col = util.select_unassigned_variable(variables)
-    values = util.order_domain_values(assignment, row, col)
+    values = util.get_domain(assignment, row, col)
 
     for value in values:
         if util.is_consistent(assignment, row, col, value):
@@ -59,13 +59,13 @@ def forward_check(assignment, row, col):
         if (
             i != col
             and assignment[row][i] == 0
-            and not util.order_domain_values(assignment, row, i)
+            and not util.get_domain(assignment, row, i)
         ):
             return False
         if (
             i != row
             and assignment[i][col] == 0
-            and not util.order_domain_values(assignment, i, col)
+            and not util.get_domain(assignment, i, col)
         ):
             return False
 
@@ -76,7 +76,7 @@ def forward_check(assignment, row, col):
                 if (
                     (box_row + i != row or box_col + j != col)
                     and assignment[box_row + i][box_col + j] == 0
-                    and not util.order_domain_values(assignment, box_row + i, box_col + j)
+                    and not util.get_domain(assignment, box_row + i, box_col + j)
                 ):
                     return False  # Empty cell in the same box has no valid values
 

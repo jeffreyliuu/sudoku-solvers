@@ -45,7 +45,7 @@ def is_consistent(assignment, row, col, value):
 def select_unassigned_variable(variables):
     return random.choice(variables)
 
-def order_domain_values(assignment, row, col):
+def get_domain(assignment, row, col):
     """Part of the forward checking aspect of the algorithm where we determine in advance the 
         possible values that a cell can take to decrease the amount of lookups.
 

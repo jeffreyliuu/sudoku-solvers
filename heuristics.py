@@ -2,7 +2,7 @@
     and heuristics
 
 Returns:
-    _type_: the solved sudoku puzzle
+    int[][]: the solved sudoku puzzle
 """
 
 import time
@@ -26,7 +26,7 @@ def recursive_backtracking_fc_h(assignment, variables):
         return assignment
 
     row, col = select_unassigned_variable(assignment, variables)
-    domain = util.order_domain_values(assignment, row, col)
+    domain = util.get_domain(assignment, row, col)
 
     values = order_domain_values(assignment, row, col, domain)
 
@@ -58,7 +58,7 @@ def select_unassigned_variable(assignment, variables):
     """
     return min(
         variables,
-        key=lambda variable: len(util.order_domain_values(assignment, variable[0], variable[1])),
+        key=lambda variable: len(util.get_domain(assignment, variable[0], variable[1])),
     )
 
 
@@ -72,13 +72,13 @@ def order_domain_values(assignment, row, col, domain):
             if (
                 i != col
                 and assignment[row][i] == 0
-                and value in util.order_domain_values(assignment, row, i)
+                and value in util.get_domain(assignment, row, i)
             ):
                 count += 1
             if (
                 i != row
                 and assignment[i][col] == 0
-                and value in util.order_domain_values(assignment, i, col)
+                and value in util.get_domain(assignment, i, col)
             ):
                 count += 1
 
@@ -89,7 +89,7 @@ def order_domain_values(assignment, row, col, domain):
                 if (
                     (box_row + i != row or box_col + j != col)
                     and assignment[box_row + i][box_col + j] == 0
-                    and value in get_domain(assignment, box_row + i, box_col + j)
+                    and value in util.get_domain(assignment, box_row + i, box_col + j)
                 ):
                     count += 1
 
@@ -101,9 +101,9 @@ def order_domain_values(assignment, row, col, domain):
 def forward_check(assignment, row, col):
     # check same col/row if any empty values
     for i in range(9):
-        if i != col and assignment[row][i] == 0 and not get_domain(assignment, row, i):
+        if i != col and assignment[row][i] == 0 and not util.get_domain(assignment, row, i):
             return False
-        if i != row and assignment[i][col] == 0 and not get_domain(assignment, i, col):
+        if i != row and assignment[i][col] == 0 and not util.get_domain(assignment, i, col):
             return False
 
         # check same box
@@ -114,17 +114,16 @@ def forward_check(assignment, row, col):
                 if (
                     (box_row + i != row or box_col + j != col)
                     and assignment[box_row + i][box_col + j] == 0
-                    and not get_domain(assignment, box_row + i, box_col + j)
+                    and not util.get_domain(assignment, box_row + i, box_col + j)
                 ):
                     return False
         return True
 
+if __name__ == "__main__":
+    puzzle = test_puzzles.medium_puzzle
 
-# run code
-puzzle = test_puzzles.easy_puzzle
-
-possible_variables = util.obtain_variables(puzzle)
-start_time = time.time()
-util.print_sudoku(recursive_backtracking_fc_h(puzzle, possible_variables))
-print(f"--- {time.time() - start_time} seconds ---")
-print("Nodes expanded: " + str(NODES_EXPANDED))
+    possible_variables = util.obtain_variables(puzzle)
+    start_time = time.time()
+    util.print_sudoku(recursive_backtracking_fc_h(puzzle, possible_variables))
+    print(f"--- {time.time() - start_time} seconds ---")
+    print("Nodes expanded: " + str(NODES_EXPANDED))
