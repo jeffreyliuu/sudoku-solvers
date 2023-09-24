@@ -1,5 +1,5 @@
-"""This module contains the sudoku solver using a recursive backtracking approach with a 
-    forward checking heuristic
+"""This module contains the sudoku solver using a recursive backtracking approach with 
+    forward checking
 
 Returns:
     int[][]: The solved sudoku puzzle 
@@ -41,8 +41,18 @@ def recursive_backtracking_fc(assignment, variables):
     return None
 
 
-# obtain all domain values
 def order_domain_values(assignment, row, col):
+    """Part of the forward checking aspect of the algorithm where we determine in advance the 
+        possible values that a cell can take to decrease the amount of lookups.
+
+    Args:
+        assignment (int[][]): instance of the sudoku puzzle
+        row (int): row of the cell we are obtaining domain values for
+        col (int): column of the cell we are obtaining domain values for
+
+    Returns:
+        int[]: array that contains the possible values that the cell (row, col) can take
+    """
     values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     for i in range(9):
         if assignment[row][i] in values:
@@ -63,6 +73,18 @@ def order_domain_values(assignment, row, col):
 
 
 def forward_check(assignment, row, col):
+    """Forward checking aspect of the algorithm where we stop recursing if we have no more
+        values that a cell can take and the assignment is still not complete.
+
+    Args:
+        assignment (int[][]): instance of the sudoku puzzle
+        row (int): row of the cell we are obtaining domain values for
+        col (int): column of the cell we are obtaining domain values for
+
+    Returns:
+        bool: boolean that returns true if the current cell still has possible values, 
+            and false otherwise
+    """
     for i in range(9):
         if (
             i != col
@@ -89,10 +111,10 @@ def forward_check(assignment, row, col):
                     return False  # Empty cell in the same box has no valid values
 
 
-# run code
-puzzle = test_puzzles.easy_puzzle
+if __name__ == "__main__":
+    puzzle = test_puzzles.medium_puzzle
+    possible_variables = util.obtain_variables(puzzle)
+    solved_puzzle = recursive_backtracking_fc(puzzle, possible_variables)
 
-possible_variables = util.obtain_variables(puzzle)
-
-util.print_sudoku(recursive_backtracking_fc(puzzle, possible_variables))
-print("Nodes expanded: " + str(NODES_EXPANDED))
+    util.print_sudoku(solved_puzzle)
+    print(f"Nodes expanded: {NODES_EXPANDED}")

@@ -1,3 +1,8 @@
+"""This module contains the sudoku solver algorithm with 
+
+Returns:
+    _type_: _description_
+"""
 import time
 import test_puzzles
 import util

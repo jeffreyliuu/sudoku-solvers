@@ -11,6 +11,16 @@ NODES_EXPANDED = 0
 
 # backtracking by
 def recursive_backtracking(assignment, variables):
+    """Normal recursive backtracking algorithm to find a consistent assignment for the sudoku 
+        problem.
+
+    Args:
+        assignment (int[][]): instance of the sudoku problem
+        variables ([int,int][]): array of coordinates that still need a value placed
+
+    Returns:
+        int[][]: Solution to the sudoku puzzle
+    """
     global NODES_EXPANDED
     if len(variables) == 0:
         return assignment
@@ -18,7 +28,7 @@ def recursive_backtracking(assignment, variables):
     row, col = util.select_unassigned_variable(variables)
 
     for value in order_domain_values():
-        if is_consistent(assignment, row, col, value):
+        if util.is_consistent(assignment, row, col, value):
             assignment[row][col] = value
             variables.remove((row, col))
             NODES_EXPANDED += 1
@@ -32,36 +42,20 @@ def recursive_backtracking(assignment, variables):
 
 # obtain all domain values
 def order_domain_values():
+    """Determine the order of possible values that the cell can take. In this algorithm, 
+        they are randomly generated.
+
+    Returns:
+        int[]: array of values that can fill a cell
+    """
     values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     random.shuffle(values)
     return values
 
+if __name__ == "__main__":
+    puzzle = test_puzzles.easy_puzzle
+    possible_variables = util.obtain_variables(puzzle)
+    solved_puzzle = recursive_backtracking(puzzle, possible_variables)
 
-# consistency check
-def is_consistent(assignment, row, col, value):
-    # row check
-    if value in assignment[row]:
-        return False
-
-    # col check
-    for i in range(9):
-        if assignment[i][col] == value:
-            return False
-
-    # box check
-    box_row = (row // 3) * 3
-    box_col = (col // 3) * 3
-    for i in range(box_row, box_row + 3):
-        for j in range(box_col, box_col + 3):
-            if assignment[i][j] == value:
-                return False
-    return True
-
-# run code
-puzzle = test_puzzles.easy_puzzle
-
-# Obtain cells that need to be filled
-possible_variables = util.obtain_variables(puzzle)
-
-util.print_sudoku(recursive_backtracking(puzzle, possible_variables))
-print("Nodes expanded: " + str(NODES_EXPANDED))
+    util.print_sudoku(solved_puzzle)
+    print(f"Nodes expanded: {NODES_EXPANDED}")
